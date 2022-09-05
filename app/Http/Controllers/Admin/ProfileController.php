@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 use App\Profile;
 
+use App\Update_History;
+
+use Carbon\Carbon;
+
 class ProfileController extends Controller
 {
     //
@@ -57,6 +61,13 @@ class ProfileController extends Controller
       $profile_form = $request->all();
       // 該当するデータを上書きして保存する
       $profile->fill($profile_form)->save();
-        return redirect('admin/profile');
+        return redirect('admin/profile/create');
+    
+      $history = new Update_History();
+      $history->profile_id = $profile->id;
+      $history->updated_at = Carbon::now();
+      $history->save();
+
+      return redirect('admin/profile/create');
     }
 }
