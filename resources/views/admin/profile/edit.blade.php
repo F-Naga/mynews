@@ -54,7 +54,7 @@
                         <ul class="list-group">
                             @if ($profile_form->update_histories != NULL)
                                 @foreach ($profile_form->update_histories as $history)
-                                    <li class="list-group-item">{{ $history->updated_at }}</li>
+                                    <li class="list-group-item">{{ $history->edited_at }}</li>
                                 @endforeach
                             @endif
                         </ul>

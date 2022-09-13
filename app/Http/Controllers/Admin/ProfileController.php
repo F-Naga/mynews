@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Profile;
 
-use App\Update_History;
+use App\UpdateHistory;
 
 use Carbon\Carbon;
 
@@ -30,8 +30,21 @@ class ProfileController extends Controller
       // データベースに保存する
       $profile->fill($form);
       $profile->save();
-        return redirect('admin/profile/create');
+        return redirect('admin/profile/');
     }
+    
+    public function index(Request $request)
+  {
+      $cond_title = $request->cond_title;
+      if ($cond_title != '') {
+          // 検索されたら検索結果を取得する
+          $posts = Profile::where('title', $cond_title)->get();
+      } else {
+          // それ以外はすべてのニュースを取得する
+          $posts = Profile::all();
+      }
+      return view('admin.profile.index', ['posts' => $posts, 'cond_title' => $cond_title]);
+  }
     
     public function edit(Request $request)
     {
@@ -43,15 +56,8 @@ class ProfileController extends Controller
       return view('admin.profile.edit', ['profile_form' => $profile]);
     }
     
-      public function delete(Request $request)
-    {
-      // 該当するPrifile  Modelを取得
-      $profile = Profile::find($request->id);
-      // 削除する
-      $profile->delete();
-      return redirect('admin/profile/');
-    }
-    public function update()
+    
+    public function update(Request $request)
     {
     // Validationをかける
       $this->validate($request, Profile::$rules);
@@ -59,15 +65,25 @@ class ProfileController extends Controller
       $profile= Profile::find($request->id);
       // 送信されてきたフォームデータを格納する
       $profile_form = $request->all();
+
       // 該当するデータを上書きして保存する
+      unset($profile_form['_token']);
       $profile->fill($profile_form)->save();
-        return redirect('admin/profile/create');
-    
-      $history = new Update_History();
+
+      $history = new UpdateHistory();
       $history->profile_id = $profile->id;
-      $history->updated_at = Carbon::now();
+      $history->edited_at = Carbon::now();
       $history->save();
 
-      return redirect('admin/profile/create');
+      return redirect('admin/profile');
+    }
+    
+      public function delete(Request $request)
+    {
+      // 該当するPrifile  Modelを取得
+      $profile = Profile::find($request->id);
+      // 削除する
+      $profile->delete();
+      return redirect('admin/profile');
     }
 }

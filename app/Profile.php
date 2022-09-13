@@ -17,7 +17,7 @@ class Profile extends Model
     
     public function update_histories()
     {
-        return $this->hasMany('App\Update_History');
+        return $this->hasMany('App\UpdateHistory');
         
     }
 }
